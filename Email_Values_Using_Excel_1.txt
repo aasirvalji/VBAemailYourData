@@ -1,0 +1,101 @@
+Sub send_email()
+
+'Declaring variables
+
+Dim NewMail As Object
+Dim MailConfig As Object
+Dim strSubject As String
+Dim strFrom As String
+Dim strTo As String
+Dim strCc As String
+Dim strBcc As String
+Dim strBody As String
+
+
+'Assigning variables to value(s)
+
+strSubject = "Mail from Excel"
+strFrom = "your email here@gmail.com"
+strTo = "to email here@domain.ca"
+strCc = ""
+strBcc = ""
+strBody = Range("A1") 'Choose range of cells to send to specified email address
+
+'Setting NewMail and MailConfig
+
+Set NewMail = CreateObject("CDO.Message")
+Set MailConfig = CreateObject("CDO.Configuration")
+
+'Clear and set current handle
+
+MailConfig.Load -1
+
+Set Fields = MailConfig.Fields
+
+    msConfigURL = "http://schemas.microsoft.com/cdo/configuration"
+
+    With Fields
+        'Enable SSL Authentication
+        .Item(msConfigURL & "/smtpusessl") = True
+
+        'Enable SMTP authentication
+        .Item(msConfigURL & "/smtpauthenticate") = 1
+
+        'Set SMTP server and port Details
+        .Item(msConfigURL & "/smtpserver") = "smtp.gmail.com"
+        .Item(msConfigURL & "/smtpserverport") = 465
+        .Item(msConfigURL & "/sendusing") = 2
+
+        'Set credentials of your Gmail Account
+        .Item(msConfigURL & "/sendusername") = "your email here@gmail.com"
+        .Item(msConfigURL & "/sendpassword") = "your password here"
+
+        'Update configuration fields
+        .Update
+
+    End With
+    NewMail.Configuration = MailConfig
+    NewMail.Subject = strSubject
+    NewMail.From = strFrom
+    NewMail.To = strTo
+    NewMail.TextBody = strBody
+    NewMail.CC = strCc
+    NewMail.BCC = strBcc
+    NewMail.Send
+    
+    'Display message upon seccussfully sending email
+    MsgBox ("The value(s) have been sent")
+
+Exit_Err:
+
+    Set NewMail = Nothing
+    Set MailConfig = Nothing
+    End
+
+'Possible error cases
+
+Err:
+    Select Case Err.Number
+
+    Case -2147220973
+        MsgBox " Could be no Internet Connection !!  -- " & Err.Description
+
+    Case -2147220975  '
+        MsgBox "Incorrect Credentials !!  -- " & Err.Description
+
+    Case Else
+        MsgBox "Error occured while sending the email !!  -- " & Err.Description
+    End Select
+
+    Resume Exit_Err
+
+With NewMail
+ Set .Configuration = MailConfig
+End With
+
+'Prompt display of error description
+
+Error_Handling:
+If Err.Description <> "" Then MsgBox Err.Description
+
+End Sub
