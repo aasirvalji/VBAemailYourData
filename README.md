@@ -1,3 +1,2 @@
-# email_data_using_excel
-if u wanna email some data within a range of cells, use this
-just adjust it to ur needz
+# What this does
+Macro that collects data within a range of cells and sends it to an email address of your choice.
